@@ -37,4 +37,6 @@ This project is dividied into separate modules. every module is responsible for 
     at Read The Docs: <a>https://pygad.readthedocs.io</a>
 </p>
 
+<h2>PyTorch</h2>
+<p></p>
 

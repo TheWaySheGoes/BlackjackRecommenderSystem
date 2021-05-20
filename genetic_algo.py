@@ -3,7 +3,9 @@ import pygad
 import pygad.torchga as torchga
 
 class Genetic_algo():
-    '''This is made to be an on-line genetic model'''
+    '''This is made to be an on-line genetic model. After installing the pygad module
+     lines 535, 629, and 647 in file pygad.py have to be changed to:
+    535 ... to ==3, and 629, 647 to ==2'''
     def __init__(self,num_generations = 250, output_size=1):
         #super().__init__()
             # Create the PyTorch model.
@@ -121,10 +123,10 @@ class Genetic_algo():
 
 #testing the genetic module
 data_vals=[[1.0, 1.0, 1.0],
-    [2.0,2.0,2.0],
-    [3.0,3.0,3.0],
-    [4.0,4.0,4.0],
-    [5.0,5.0,5.0]]
+        [2.0,2.0,2.0],
+        [3.0,3.0,3.0],
+        [4.0,4.0,4.0],
+        [5.0,5.0,5.0]]
 data_labels=[[0.0,0.0],
             [0.0,0.0],
             [2.0,2.0],
