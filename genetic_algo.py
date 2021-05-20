@@ -3,7 +3,7 @@ import pygad
 import pygad.torchga as torchga
 
 class Genetic_algo():
-    '''aa'''
+    '''This is made to be an on-line genetic model'''
     def __init__(self,num_generations = 250, output_size=1):
         #super().__init__()
             # Create the PyTorch model.
@@ -107,7 +107,8 @@ class Genetic_algo():
         return predictions
 
     def predict(self,data):
-        data= torch.tensor(data)
+        data= torch.tensor([data])
+        solution, solution_fitness, solution_idx = self.ga_instance.best_solution()
         best_solution_weights = torchga.model_weights_as_dict(model=self.model,
                                                         weights_vector=solution)
         self.model.load_state_dict(best_solution_weights)
