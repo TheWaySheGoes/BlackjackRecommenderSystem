@@ -1,11 +1,11 @@
 # BlackjackRecommenderSystem
 Simple Ai for playing the Blackjack game
 
-<p>Structure</p>
+<h1>Structure</h1>
 
-    <h1>
-    This project is dividied into separate modules. every module is responsible for one of the following:
-    </h1>
+<p>
+This project is dividied into separate modules. every module is responsible for one of the following:
+</p>
     <ol>
         <li>GUI</li>
         <li>Ai for card recognition</li>
