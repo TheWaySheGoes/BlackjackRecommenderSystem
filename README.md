@@ -26,10 +26,12 @@ This project is dividied into separate modules. every module is responsible for 
 <p>TorchGA is part of the PyGAD library for training PyTorch models
     using the genetic algorithm (GA). This feature is supported starting
     from PyGAD 2.10.0.
-
+</p>
+<p>
     The TorchGA project has a single module named torchga.py which has a class 
     named TorchGA for preparing an initial population of PyTorch model parameters.
-
+</p>
+<p>
     PyGAD is an open-source Python library for building the genetic algorithm and
     training machine learning algorithms. Check the library's documentation
     at Read The Docs: <a>https://pygad.readthedocs.io</a>
