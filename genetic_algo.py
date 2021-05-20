@@ -6,19 +6,19 @@ class Genetic_algo():
     '''This is made to be an on-line genetic model. After installing the pygad module
      lines 535, 629, and 647 in file pygad.py have to be changed to:
     535 ... to ==3, and 629, 647 to ==2'''
-    def __init__(self,num_generations = 250, output_size=1):
+    def __init__(self,num_generations = 250,num_parents_mating=5,num_solutions=10,hidden_size=50, output_size=1):
         #super().__init__()
             # Create the PyTorch model.
-        self.input_layer = torch.nn.Linear(3, 50)
+        self.input_layer = torch.nn.Linear(3, hidden_size)
         self.relu_layer = torch.nn.ReLU()
-        self.output_layer = torch.nn.Linear(50, output_size)
+        self.output_layer = torch.nn.Linear(hidden_size, output_size)
         self.model = torch.nn.Sequential(self.input_layer,
                                 self.relu_layer,
                                 self.output_layer)
             # print(model)
             # Create an instance of the pygad.torchga.TorchGA class to build the initial population.
         self.torch_ga = torchga.TorchGA(model=self.model,
-                            num_solutions=10)
+                            num_solutions=num_solutions)
 
         self.loss_function = torch.nn.L1Loss()
 
@@ -28,6 +28,7 @@ class Genetic_algo():
                                 [3.0,3.0,3.0],
                                 [4.0,4.0,4.0]])
 
+
             # Data outputs
         self.data_outputs = torch.tensor([[0.0,0.0],
                                 [0.0,1.0],
@@ -35,7 +36,7 @@ class Genetic_algo():
                                 [1.0,1.0]])
             # Prepare the PyGAD parameters. Check the documentation for more information: https://pygad.readthedocs.io/en/latest/README_pygad_ReadTheDocs.html#pygad-ga-class
         self.num_generations = num_generations # Number of generations.
-        self.num_parents_mating = 5 # Number of solutions to be selected as parents in the mating pool.
+        self.num_parents_mating = num_parents_mating # Number of solutions to be selected as parents in the mating pool.
         self.initial_population = self.torch_ga.population_weights # Initial population of network weights
         self.parent_selection_type = "sss" # Type of parent selection.
         self. crossover_type = "single_point" # Type of the crossover operator.
@@ -80,8 +81,8 @@ class Genetic_algo():
 
 
     def set_data(self,data_input,data_output):
-        self.data_input=torch.tensor([data_input])
-        self.data_output=torch.tensor([data_output])
+        self.data_inputs=torch.tensor([data_input])
+        self.data_outputs=torch.tensor([data_output])
 
     def learn(self):
         '''aaa '''
@@ -103,8 +104,8 @@ class Genetic_algo():
         predictions = self.model(self.data_inputs)
         print("Predictions : \n", predictions.detach().numpy())
 
-        #abs_error = self.loss_function(predictions, self.data_outputs)
-        #print("Absolute Error : ", abs_error.detach().numpy())
+        abs_error = self.loss_function(predictions, self.data_outputs)
+        print("Absolute Error : ", abs_error.detach().numpy())
 
         return predictions
 
@@ -126,23 +127,27 @@ data_vals=[[1.0, 1.0, 1.0],
         [2.0,2.0,2.0],
         [3.0,3.0,3.0],
         [4.0,4.0,4.0],
-        [5.0,5.0,5.0]]
-data_labels=[[0.0,0.0],
-            [0.0,0.0],
-            [2.0,2.0],
-            [1.0,1.0],
-            [1.0,1.0]]
+        [5.0,5.0,5.0],
+        [6.0,6.0,6.0]]
+data_labels=[[0.0],
+            [0.0],
+            [10.0],
+            [10.0],
+            [20.0],
+            [20.0]]
 output_size=len(data_labels[0])
 print(output_size)
-ga = Genetic_algo(500,output_size)
-
+ga = Genetic_algo(1,10,20,50,output_size)
+gens=250
 print(len(data_vals))
-print(data_vals[0])
 
 
-for i in range(0,len(data_vals)):
-    ga.set_data(data_vals[i],data_labels[i])
-    ga.learn()  
-ga.predict([1.0,2.0,3.0])
+for i in range(0,gens):
+    for i in range(0,len(data_vals)):
+        ga.set_data(data_vals[i],data_labels[i])
+        ga.learn()  
+        #ga.best_solution()
+print(data_vals[3])
+ga.predict(data_vals[3])
 
 ###############

@@ -3,15 +3,12 @@
 #
 
 import test as test
-from Genetic_algo import Genetic_algo
+#from Genetic_algo import Genetic_algo
 
 
 
 
 test#first test
-
-
-
 
 
 
