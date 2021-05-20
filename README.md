@@ -2,7 +2,8 @@
 Simple Ai for playing the Blackjack game
 
 <h1>Initial stuff</h1>
-<p>All of the dependencies are in the requirements.txt You can install them with "pip install -r requirements.txt"</p>
+<p>All of the dependencies are in the requirements.txt 
+    You can install them with "pip install -r requirements.txt"</p>
 
 <h1>Structure</h1>
 <p>
@@ -20,7 +21,9 @@ This project is dividied into separate modules. every module is responsible for 
 <h1>Main modules used in the project</h1>
 
 <h2>PyGad</h2>
-<p>TorchGA is part of the PyGAD library for training PyTorch models using the genetic algorithm (GA). This feature is supported starting from PyGAD 2.10.0.
+<p>TorchGA is part of the PyGAD library for training PyTorch models
+     using the genetic algorithm (GA). This feature is supported starting
+     from PyGAD 2.10.0.
 
 The TorchGA project has a single module named torchga.py which has a class named TorchGA for preparing an initial population of PyTorch model parameters.
 
