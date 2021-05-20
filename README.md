@@ -2,7 +2,7 @@
 Simple Ai for playing the Blackjack game
 
 <h1>Initial stuff</h1>
-<p>all of the dependencies are in the requirements.txt You can install them with pip install -r requirements.txt</p>
+<p>All of the dependencies are in the requirements.txt You can install them with "pip install -r requirements.txt"</p>
 
 <h1>Structure</h1>
 
