@@ -11,8 +11,8 @@ class GUI():
 
 
         self.column_1 = [
-                    [sg.Text('mouse x'),sg.In(size=(25,1),enable_events=True,key='mouse_x_start'),sg.Text('mouse x'),sg.In(size=(25,1),enable_events=True,key='mouse_x_end')],
-                    [sg.Text('mouse y'),sg.In(size=(25,1),enable_events=True,key='mouse_y_start'),sg.Text('mouse y'),sg.In(size=(25,1),enable_events=True,key='mouse_y_end')],
+                    [sg.Text('start x'),sg.In(size=(5,1),enable_events=True,key='mouse_x_start'),sg.Text('end x'),sg.In(size=(5,1),enable_events=True,key='mouse_x_end')],
+                    [sg.Text('start y'),sg.In(size=(5,1),enable_events=True,key='mouse_y_start'),sg.Text('end y'),sg.In(size=(5,1),enable_events=True,key='mouse_y_end')],
                     [sg.Text('in text         '), sg.In(size=(25, 1),enable_events=True,key='in')],
                     [sg.Text('out text '), sg.In(size=(25, 1),enable_events=True,key='out')],
                     [sg.Text('extra '), sg.In(size=(25, 1),enable_events=True,key='extra')],
