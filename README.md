@@ -45,5 +45,5 @@ This project is dividied into separate modules. every module is responsible for 
 <p>
     PySimpleGUI wraps tkinter, Qt, WxPython and Remi so that you get all the same widgets,
      but you interact with them in a more friendly way that's common across the ports.
-     <a>https://pysimplegui.readthedocs.io/en/latest/</a>
+     <a href="https://pysimplegui.readthedocs.io/en/latest/">https://pysimplegui.readthedocs.io/en/latest/</a>
 </p>
