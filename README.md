@@ -42,10 +42,8 @@ This project is dividied into separate modules. every module is responsible for 
 
 <h2>PySimpleGUI</h2>
 
-<p>PySimpleGUI wraps tkinter, Qt, WxPython and Remi so that you get all the same widgets, but you interact with them in a more friendly way that's common across the ports.
-
-    What does a wrapper do (Yo! PSG in the house!)? It does the layout, boilerplate code, creates and manages the GUI Widgets for you and presents you with a simple, efficient interface. Most importantly, it maps the Widgets in tkinter/Qt/Wx/Remi into PySimpleGUI Elements. Finally, it replaces the GUIs' event loop with one of our own.
-    
-    You've seen examples of the code already. The big deal of all this is that anyone can create a GUI simply and quickly that matches GUIs written in the native GUI framework. You can create complex layouts with complex element interactions. And, that code you wrote to run on tkinter will also run on Qt by changing your import statement.
-    
-    If you want a deeper explanation about the architecture of PySimpleGUI, you'll find it on ReadTheDocs in the same document as the Readme & Cookbook. There is a tab at the top with labels for each document. <a>https://pysimplegui.readthedocs.io/en/latest/</a></p>
+<p>
+    PySimpleGUI wraps tkinter, Qt, WxPython and Remi so that you get all the same widgets,
+     but you interact with them in a more friendly way that's common across the ports.
+     <a>https://pysimplegui.readthedocs.io/en/latest/</a>
+</p>
