@@ -2,18 +2,19 @@ import os
 from pynput.mouse import Listener as MouseListener
 from pynput.keyboard import Listener as KeyboardListener
 import PySimpleGUI as sg
+import threading
 
-
-class GUI():
+class GUI(threading.Thread):
    
     def __init__(self):
+        threading.Thread.__init__(self)
         self.list=[]
 
 
         self.column_1 = [
                     [sg.Text('start x'),sg.In(size=(5,1),enable_events=True,key='mouse_x_start'),sg.Text('end x'),sg.In(size=(5,1),enable_events=True,key='mouse_x_end')],
                     [sg.Text('start y'),sg.In(size=(5,1),enable_events=True,key='mouse_y_start'),sg.Text('end y'),sg.In(size=(5,1),enable_events=True,key='mouse_y_end')],
-                    [sg.Text('in text         '), sg.In(size=(25, 1),enable_events=True,key='in')],
+                    [sg.Text('in text'), sg.In(size=(25, 1),enable_events=True,key='in')],
                     [sg.Text('out text '), sg.In(size=(25, 1),enable_events=True,key='out')],
                     [sg.Text('extra '), sg.In(size=(25, 1),enable_events=True,key='extra')],
                     [sg.Button('ok',key='_ok_'),sg.Button('add',key='_add_'),sg.Button('remove',key='_remove_') ],
@@ -21,7 +22,7 @@ class GUI():
                     ]
 
         self.column_2 = [
-                    [sg.Image(background_color='red',enable_events=True,size=(60,20),key='_image_')]
+                    [sg.Image(filename="data\MatejkoKonst3Maj1791.png",background_color='white',enable_events=True,size=(300,300),key='_image_')]
                     ]
 
         self.layout = [
@@ -34,7 +35,10 @@ class GUI():
         self.mouse_listener = MouseListener(on_move=self.on_move, on_click=self.on_click,onscroll=self.on_scroll)
 
 
-    def start(self):
+    def run(self):
+        self.start_gui()
+
+    def start_gui(self):
         #start mouse and keyboard listeners
         self.keyboard_listener.start()
         self.mouse_listener.start()
@@ -88,14 +92,13 @@ class GUI():
     def on_release(self,key):
         print(key)
     def on_move(self,x,y):
-        print(x)
-        print(y)
+        x
         
     def on_click(self,x,y,button,pressed):
-        print(x)
-        print(y)
-        print(button)
-        print(pressed)
+        self.list.append(button)
+        self.list.append(pressed)
+        self.window['_list_'].update(self.list)
+        if len(self.list) >100000: self.list=[]
         #on press and release  get pointer position      
         if pressed:
             self.window['mouse_x_start'].update(x)
@@ -112,5 +115,5 @@ class GUI():
 
 
 ##### testing gui
-gui=GUI()
-gui.start()
+#gui=GUI()
+#gui.start()

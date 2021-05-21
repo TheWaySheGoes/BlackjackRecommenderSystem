@@ -1,13 +1,16 @@
 import torch
 import pygad 
 import pygad.torchga as torchga
+import threading
 
-class Genetic_algo():
+class Genetic_algo(threading.Thread):
     '''This is made to be an on-line genetic model. After installing the pygad module
      lines 535, 629, and 647 in file pygad.py have to be changed to:
     535 ... to ==3, and 629, 647 to ==2'''
     def __init__(self,num_generations = 250,num_parents_mating=5,num_solutions=10,hidden_size=50, output_size=1):
         #super().__init__()
+        threading.Thread.__init__(self)
+
             # Create the PyTorch model.
         self.input_layer = torch.nn.Linear(3, hidden_size)
         self.relu_layer = torch.nn.ReLU()
@@ -30,10 +33,10 @@ class Genetic_algo():
 
 
             # Data outputs
-        self.data_outputs = torch.tensor([[0.0,0.0],
-                                [0.0,1.0],
-                                [1.0,0.0],
-                                [1.0,1.0]])
+        self.data_outputs = torch.tensor([[0.0],
+                                [0.0],
+                                [1.0],
+                                [1.0]])
             # Prepare the PyGAD parameters. Check the documentation for more information: https://pygad.readthedocs.io/en/latest/README_pygad_ReadTheDocs.html#pygad-ga-class
         self.num_generations = num_generations # Number of generations.
         self.num_parents_mating = num_parents_mating # Number of solutions to be selected as parents in the mating pool.
@@ -55,7 +58,8 @@ class Genetic_algo():
                         keep_parents=self.keep_parents,
                         on_generation=None)#self.callback_generation)#pygad.py changed line 629,647  ...=2
 
-
+    def run(self):
+        print("starting gen")
 
     
     def fitness_func(self,solution, sol_idx):
@@ -86,6 +90,7 @@ class Genetic_algo():
 
     def learn(self):
         '''aaa '''
+        print("learning")
         self.ga_instance.run()
         # After the generations complete, some plots are showed that summarize how the outputs/fitness values evolve over generations.
         #self.ga_instance.plot_result(title="PyGAD & PyTorch - Iteration vs. Fitness", linewidth=4)
@@ -120,34 +125,35 @@ class Genetic_algo():
         return predictions
 
 
+def test_this():
+    #testing the genetic module
+    data_vals=[[1.0, 1.0, 1.0],
+            [2.0,2.0,2.0],
+            [3.0,3.0,3.0],
+            [4.0,4.0,4.0],
+            [5.0,5.0,5.0],
+            [6.0,6.0,6.0]]
+    data_labels=[[0.0],
+                [0.0],
+                [10.0],
+                [10.0],
+                [20.0],
+                [20.0]]
+    output_size=len(data_labels[0])
+    print(output_size)
+    ga = Genetic_algo(1,10,20,50,output_size)
+    gens=250
+    print(len(data_vals))
 
 
-#testing the genetic module
-data_vals=[[1.0, 1.0, 1.0],
-        [2.0,2.0,2.0],
-        [3.0,3.0,3.0],
-        [4.0,4.0,4.0],
-        [5.0,5.0,5.0],
-        [6.0,6.0,6.0]]
-data_labels=[[0.0],
-            [0.0],
-            [10.0],
-            [10.0],
-            [20.0],
-            [20.0]]
-output_size=len(data_labels[0])
-print(output_size)
-ga = Genetic_algo(1,10,20,50,output_size)
-gens=250
-print(len(data_vals))
+    for i in range(0,gens):
+        for i in range(0,len(data_vals)):
+            ga.set_data(data_vals[i],data_labels[i])
+            ga.learn()  
+            #ga.best_solution()
+    print(data_vals[3])
+    ga.predict(data_vals[3])
 
+    ###############
 
-for i in range(0,gens):
-    for i in range(0,len(data_vals)):
-        ga.set_data(data_vals[i],data_labels[i])
-        ga.learn()  
-        #ga.best_solution()
-print(data_vals[3])
-ga.predict(data_vals[3])
-
-###############
+#test_this()
