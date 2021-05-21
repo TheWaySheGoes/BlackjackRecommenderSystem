@@ -11,8 +11,8 @@ class GUI():
 
 
         self.column_1 = [
-                    [sg.Text('mouse x'),sg.In(size=(25,1),enable_events=True,key='mouse_x')],
-                    [sg.Text('mouse y'),sg.In(size=(25,1),enable_events=True,key='mouse_y')],
+                    [sg.Text('mouse x'),sg.In(size=(25,1),enable_events=True,key='mouse_x_start'),sg.Text('mouse x'),sg.In(size=(25,1),enable_events=True,key='mouse_x_end')],
+                    [sg.Text('mouse y'),sg.In(size=(25,1),enable_events=True,key='mouse_y_start'),sg.Text('mouse y'),sg.In(size=(25,1),enable_events=True,key='mouse_y_end')],
                     [sg.Text('in text         '), sg.In(size=(25, 1),enable_events=True,key='in')],
                     [sg.Text('out text '), sg.In(size=(25, 1),enable_events=True,key='out')],
                     [sg.Text('extra '), sg.In(size=(25, 1),enable_events=True,key='extra')],
@@ -38,8 +38,10 @@ class GUI():
         #start mouse and keyboard listeners
         self.keyboard_listener.start()
         self.mouse_listener.start()
+        #######this blocks dont use########
         #self.keyboard_listener.join()
         #self.mouseListener.join()
+        ###################################
 
         in_text=""
         out_text=""
@@ -80,19 +82,29 @@ class GUI():
             if event == sg.WIN_CLOSED:
                 break
 
+#mouse and keyboard events
     def on_press(self,key):
         print(key)
     def on_release(self,key):
         print(key)
     def on_move(self,x,y):
-        self.window['mouse_x'].update(x)
-        self.window['mouse_y'].update(y)
+        print(x)
+        print(y)
         
     def on_click(self,x,y,button,pressed):
         print(x)
         print(y)
         print(button)
-        print(pressed)
+        print(pressed)      
+        if pressed:
+            self.window['mouse_x_start'].update(x)
+            self.window['mouse_y_start'].update(y)
+        else:
+            self.window['mouse_x_end'].update(x)
+            self.window['mouse_y_end'].update(y)
+            
+
+
     def on_scroll(self,x,y,dx,dy):
         print("scroll")
 
