@@ -95,7 +95,8 @@ class GUI():
         print(x)
         print(y)
         print(button)
-        print(pressed)      
+        print(pressed)
+        #on press and release  get pointer position      
         if pressed:
             self.window['mouse_x_start'].update(x)
             self.window['mouse_y_start'].update(y)
