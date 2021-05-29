@@ -19,8 +19,8 @@ from skimage import io, transform
 #  https://pytorch.org/tutorials/recipes/recipes/custom_dataset_transforms_loader.html
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-n = 4
-cards = pd.read_csv('dataset/card2/train_labels.csv')
+n = 22
+cards = pd.read_csv('data/card2/train_labels.csv')
 img_name = cards.iloc[n, 0]
 suit = cards.iloc[n, 3]
 landmarks = cards.iloc[n, 4:]
@@ -35,11 +35,12 @@ print('The 4 Landmarks: {}'.format(landmarks[:4]))
 def show_landmarks(image, landmarks):
     """Show image with landmarks"""
     plt.imshow(image)
+    print(landmarks)
     plt.scatter(landmarks[:, 0], landmarks[:, 1], s=50, marker='.', c='r')
     plt.pause(0.001)  # pause a bit so that plots are updated
 
 plt.figure()
-show_landmarks(io.imread(os.path.join('dataset/card2/train', img_name)),
+show_landmarks(io.imread(os.path.join('data/card2/train', img_name)),
                landmarks)
 plt.show()
 
@@ -71,6 +72,7 @@ class CardDataset(Dataset):
 
         image = io.imread(img_name)
        # suit = self.cards.iloc[idx, 3]
+        
         landmarks = self.cards.iloc[idx, 4:]
         landmarks = np.array([landmarks])
         landmarks = landmarks.astype('float').reshape(-1, 2)
@@ -81,12 +83,12 @@ class CardDataset(Dataset):
 
         return sample
 
-"""
-Insantiate class and look through data samples.
-Prints the first 4 samples.
 
-card_dataset = CardDataset(csv_file='dataset/card2/train_labels.csv',
-                                    root_dir='dataset/card2/train')
+#Insantiate class and look through data samples.
+#Prints the first 4 samples.
+
+card_dataset = CardDataset(csv_file='data/card2/train_labels.csv',
+                                    root_dir='data/card2/train')
 
 fig = plt.figure()
 
@@ -105,4 +107,3 @@ for i in range(len(card_dataset)):
         plt.show()
         break
     
-"""

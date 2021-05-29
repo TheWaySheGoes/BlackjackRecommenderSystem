@@ -72,7 +72,7 @@ output = model(images, targets)
 model.eval()
 x = [torch.rand(3, 300, 400), torch.rand(3, 500, 400)]
 predictions = model(x)
-print(predictions.scores)
+
 print(predictions['labels'])
 
 
