@@ -1,5 +1,7 @@
 import torchvision
 import torch
+from torchvision.io import read_image
+
 aaaa=   [[[0.0116, 0.03857, 0.9454, 0.3402],
          [0.04021, 0.01515, 0.6301, 0.0718], 
          [0.06871, 0.06273, 0.8718, 0.3487], 
