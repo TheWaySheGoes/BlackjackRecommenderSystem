@@ -44,7 +44,7 @@ class GUI(threading.Thread):
                     [sg.Text('out text '), sg.In(size=(25, 1),enable_events=True,key='out')],
                     [sg.Text('extra '), sg.In(size=(25, 1),enable_events=True,key='extra')],
                     [sg.Button('grab',key='_grab_'),sg.Button('add',key='_add_'),sg.Button('remove',key='_remove_') ],
-                    [sg.Listbox(values=self.list,enable_events=True,size=(30,20), key='_list_')]
+                    [sg.Listbox(values=self.list,enable_events=True,size=(30,20), key='_list_',auto_size_text=True)]
                     ]
 
         self.image_window = [sg.Image(filename="data\MatejkoKonst3Maj1791.png",background_color='white',enable_events=True,size=(300,300),key='_image_')]
@@ -54,7 +54,7 @@ class GUI(threading.Thread):
                     ]
 
         self.layout = [
-                [sg.Column(self.column_1),sg.Column(self.column_2),sg.Column(self.column_3)]                
+                [sg.Column(self.column_1),sg.Column(self.column_2,key='column_2'),sg.Column(self.column_3)]                
                 ]
 
         self.window = sg.Window('BlackJack',self.layout,resizable=True)
@@ -173,7 +173,7 @@ class GUI(threading.Thread):
             if event=='extra':
                 extra=values['extra']
 
-            if event == "_grab_" and self.grab_area_isSet():
+            if event == "_grab_" and self.grab_area_isSet()==True:
                 img=ImageGrab.grab(bbox=(int(self.window['mouse_x_start'].get()),int(self.window['mouse_y_start'].get()),int(self.window['mouse_x_end'].get()),int(self.window['mouse_y_end'].get())),include_layered_windows=True,all_screens=True)
                 #img.show()
                 img.save('data\grab1.png')
@@ -217,9 +217,9 @@ class GUI(threading.Thread):
         x
         
     def on_click(self,x,y,button,pressed):
-        self.list.append(button)
-        self.list.append(pressed)
-        self.window['_list_'].update(self.list)
+        #self.list.append(button)
+        #self.list.append(pressed)
+        #self.window['_list_'].update(self.list)
         if len(self.list) >100000: self.list=[]
         #on press and release  get pointer position      
         if pressed:
@@ -283,14 +283,16 @@ class GUI(threading.Thread):
         print("scroll")
 
     def grab_area_isSet(self):
-        if self.window['mouse_x_start'].get() <= self.window['mouse_x_end'].get() and self.window['mouse_y_start'].get() <= self.window['mouse_y_end'].get():
-            return True
+        ret=False
+        if self.window['mouse_x_start'].get() < self.window['mouse_x_end'].get() and self.window['mouse_y_start'].get() < self.window['mouse_y_end'].get():
+            ret=True
         else:
             msg="Grab area must be set n 1. Check the area set button \n 2. Click and drag mouse pointer to mark the area \n 3. Do so from upper left to lower right "
             self.list.append(msg)
             self.window['_list_'].update(self.list)
             print(msg)
-            return False
+            ret=False
+        return ret
 
 ##### testing gui
 
