@@ -82,6 +82,9 @@ csv_path='test_run/BlackjackRecommenderSystem/new_dataset/card2/new_train_label.
 img_path='test_run/BlackjackRecommenderSystem/new_dataset/card2/train/'
 cards_csv = pd.read_csv(csv_path)
 
+img_from=0
+img_to=1
+nbr_steps=3
 img_limit=100
 #print(cards_csv.head())
 file_names=cards_csv['filename']
@@ -144,6 +147,7 @@ for i in range(0,img_limit):
 output = model(imgs, trgts)
 
 #torch.save(model,'models\\model1.m')
+#model.torch.load('models\\model1.m')
 
 model.eval()
 for i in range(0,int(img_limit/3)):
@@ -154,8 +158,5 @@ for i in range(0,int(img_limit/3)):
 # For inference
 #model.eval()
 #x = [torch.rand(3, 300, 400), torch.rand(3, 500, 400)]
-
-
-
 # optionally, if you want to export the model to ONNX:
 #torch.onnx.export(model, x, "faster_rcnn.onnx", opset_version = 11)
