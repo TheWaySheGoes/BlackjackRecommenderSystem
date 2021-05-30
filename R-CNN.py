@@ -1,6 +1,9 @@
 import torchvision
+from torchvision import transforms
 import torch
 from torchvision.io import read_image
+import pandas as pd
+
 
 aaaa=   [[[0.0116, 0.03857, 0.9454, 0.3402],
          [0.04021, 0.01515, 0.6301, 0.0718], 
@@ -54,32 +57,96 @@ aaaa=   [[[0.0116, 0.03857, 0.9454, 0.3402],
 
 
 
+
 print("test: works")
 
-model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False,num_classes=11)
 # For training
-#images, boxes = torch.rand(4, 3, 600, 1200), torch.tensor(aaaa)#torch.rand(4, 11, 4)
-#print(boxes)
-
-#labels = torch.randint(1, 91, (4, 11))
-#images = list(image for image in images)
-#targets = []
-#for i in range(len(images)):
-#    d = {}
-#    d['boxes'] = boxes[i]
-#    d['labels'] = labels[i]
-#    targets.append(d)
+images, boxes = torch.rand(4, 3, 600, 1200), torch.tensor(aaaa)#torch.rand(4, 11, 4)
 
 
+labels = torch.randint(1, 91, (4, 11))
+images = list(image for image in images)
+targets = []
+for i in range(len(images)):
+    d = {}
+    d['boxes'] = boxes[i]
+    d['labels'] = labels[i]
+    targets.append(d)
+#print(targets)
+
+#########inputs############
+csv_path='new_dataset\\card2\\new_train_label.csv'
+img_path='new_dataset\\card2\\train\\'
+cards_csv = pd.read_csv(csv_path)
+img_limit=20
+#print(cards_csv.head())
+file_names=cards_csv['filename']
+#img_limit=len(file_names)
+print('image_limit:',img_limit)
+#print(file_names)
+imgs=[] #list of imgae tensors
+data_transform=transforms.Compose([transforms.Normalize(mean=[0.485],std=[0.229])])
+
+for i in range(0,img_limit):
+    #print(file_names[i])
+    img=(read_image(img_path+file_names[i])).float()
+    print(img.shape)
+    img=data_transform(img)
+    print(img.shape)
+    imgs.append(img)
+
+#########targets############
+labels=cards_csv['labels']
+klass=cards_csv['class']
+xmin=cards_csv['xmin']
+ymin=cards_csv['ymin']
+xmax=cards_csv['xmax']
+ymax=cards_csv['ymax']
+klass_length=len(klass.unique())
+print("klass length:",klass_length)
+
+print("label length:",len(labels.unique()))
+print("label max val:", max(labels))
+
+boxs=[]
+for i in range(0,img_limit):
+    boxs.append(torch.tensor([[xmin[i],ymin[i],xmax[i],ymax[i]]]))
+    #print(boxs[i])
+lbls=[]
+for i in range(0,img_limit):
+    lbls.append(torch.tensor([int(labels[i])]))
+    #print(lbls[i])    
+kls=[]
+#for i in range(0,img_limit):
+#    kls.append(torch.tensor(klass[i]))
+#    print(kls[i])    
+print("labels: ",lbls)
 
 
-output = model(images, targets)
-# For inference
+trgts=[] # list of target dictionaries with tensors
+
+for i in range(0,img_limit):
+    d={}
+    d['boxes']=boxs[i]
+    d['labels']=lbls[i]
+    trgts.append(d)
+#print(trgts)
+
+output = model(imgs, trgts)
+
+#torch.save(model,'models\\model1.m')
+
 model.eval()
-x = [torch.rand(3, 300, 400), torch.rand(3, 500, 400)]
-predictions = model(x)
+for i in range(0,int(img_limit/3)):
+    predictions = model([imgs[i]])
+    print("actual label:",lbls[i])
+    print(predictions)
 
-print(predictions['labels'])
+# For inference
+#model.eval()
+#x = [torch.rand(3, 300, 400), torch.rand(3, 500, 400)]
+
 
 
 # optionally, if you want to export the model to ONNX:
