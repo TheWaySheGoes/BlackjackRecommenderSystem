@@ -78,32 +78,22 @@ for i in range(len(images)):
 #print(targets)
 
 #########inputs############
-csv_path='test_run/BlackjackRecommenderSystem/new_dataset/card2/new_train_label.csv'
-img_path='test_run/BlackjackRecommenderSystem/new_dataset/card2/train/'
+csv_path='new_dataset/card2/new_train_label.csv'
+img_path='new_dataset/card2/train/'
 cards_csv = pd.read_csv(csv_path)
+print('dataset:',cards_csv)
 
 img_from=0
 img_to=1
-nbr_steps=3
-img_limit=100
+img_steps=1
+img_max_val=20
+
 #print(cards_csv.head())
 file_names=cards_csv['filename']
 #img_limit=len(file_names)
-print('image_limit:',img_limit)
 #print(file_names)
-imgs=[] #list of imgae tensors
-data_transform=transforms.Compose([transforms.Normalize(mean=[0.485],std=[0.229])])
 
-for i in range(0,img_limit):
-    #print(file_names[i])
-    img=(read_image(img_path+file_names[i])).float()
-    #print(img.shape)
-    img=data_transform(img)
-    #print(img.shape)
-    img=img.to(device)
-    imgs.append(img)
-#imgs=imgs.to(device)
-#########targets############
+data_transform=transforms.Compose([transforms.Normalize(mean=[0.485],std=[0.229])])
 labels=cards_csv['labels']
 klass=cards_csv['class']
 xmin=cards_csv['xmin']
@@ -112,48 +102,66 @@ xmax=cards_csv['xmax']
 ymax=cards_csv['ymax']
 klass_length=len(klass.unique())
 print("klass length:",klass_length)
-
 print("label length:",len(labels.unique()))
 print("label max val:", max(labels))
 
-boxs=[]
-for i in range(0,img_limit):
-    
-    boxs.append(torch.tensor([[xmin[i],ymin[i],xmax[i],ymax[i]]]).to(device))
-    #print(boxs[i])
-
-lbls=[]
-for i in range(0,img_limit):
-    lbls.append(torch.tensor([int(labels[i])]).to(device))
-    #print(lbls[i])    
-
-#lbls=lbls.to(device)
-kls=[]
-#for i in range(0,img_limit):
-#    kls.append(torch.tensor(klass[i]))
-#    print(kls[i])    
-print("labels: ",lbls)
 
 
-trgts=[] # list of target dictionaries with tensors
+while img_to < img_max_val:
+    imgs=[] #list of image tensors inputs
+    boxs=[]
+    lbls=[]
+    kls=[]
+    trgts=[] # list of target dictionaries with tensors
 
-for i in range(0,img_limit):
-    d={}
-    d['boxes']=boxs[i]
-    d['labels']=lbls[i]
-    trgts.append(d)
-#print(trgts)
-#trgts=trgts.to(device)
-output = model(imgs, trgts)
+    for i in range(img_from,img_to):
+        #print(file_names[i])
+        img=(read_image(img_path+file_names[i])).float()
+        #print(img.shape)
+        img=data_transform(img)
+        #print(img.shape)
+        img=img.to(device)
+        imgs.append(img)
+    #imgs=imgs.to(device)
+    #########targets############
+    for i in range(img_from,img_to):
+        boxs.append(torch.tensor([[xmin[i],ymin[i],xmax[i],ymax[i]]]).to(device))
+        #print(boxs[i])
+    for i in range(img_from,img_to):
+        lbls.append(torch.tensor([int(labels[i])]).to(device))
+        #print(lbls[i])    
+    #lbls=lbls.to(device)
+    #for i in range(img_from,img_to):
+    #    kls.append(torch.tensor(klass[i]))
+    #    print(kls[i])    
+    print("labels: ",lbls)
 
-#torch.save(model,'models\\model1.m')
-#model.torch.load('models\\model1.m')
+    for i in range(0,len(boxs)):
+        d={}
+        d['boxes']=boxs[i]
+        d['labels']=lbls[i]
+        trgts.append(d)
+    #print(trgts)
+    #trgts=trgts.to(device)
+    output = model(imgs, trgts)
+    torch.save(model,'models\\model1.m')
+    img_from=img_to
+    img_to=img_to+img_steps
 
-model.eval()
-for i in range(0,int(img_limit/3)):
-    predictions = model([imgs[i]])
-    print("actual label:",lbls[i])
+
+
+
+    model=torch.load('models\\model1.m')
+    model.eval()
+
+    predictions = model([imgs[0]])
+    print("actual label:",lbls[0])
     print(predictions)
+
+#for i in range(img_from,img_to):
+#    predictions = model([imgs[i]])
+#    print("actual label:",lbls[i])
+#    print(predictions)
 
 # For inference
 #model.eval()
