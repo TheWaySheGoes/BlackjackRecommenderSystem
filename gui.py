@@ -181,21 +181,25 @@ class GUI(threading.Thread):
                 #print("grab")
                
             if event=='_add_':
+
                 self.list.append(in_text+';'+out_text+';'+extra)
                 self.window['_list_'].update(self.list)
 
             if event=='_remove_':
-                self.list.remove(in_text+';'+out_text+';'+extra)
-                self.window['_list_'].update(self.list)
+                if len(values['_list_'])>0:
+                    self.list.remove(in_text+';'+out_text+';'+extra)
+                    self.window['_list_'].update(self.list)
 
             if event=='_list_':
-                list_item_split=values['_list_'][0].strip().split(';')
-                self.window['in'].update(list_item_split[0])
-                in_text=values['in']
-                self.window['out'].update(list_item_split[1])
-                out_text=values['out']
-                self.window['extra'].update(list_item_split[2])
-                extra=values['extra']
+                
+                if len(values['_list_'])>1:
+                    list_item_split=values['_list_'][0].strip().split(';')
+                    self.window['in'].update(list_item_split[0])
+                    in_text=values['in']
+                    self.window['out'].update(list_item_split[1])
+                    out_text=values['out']
+                    self.window['extra'].update(list_item_split[2])
+                    extra=values['extra']
 
 
             if event == sg.WIN_CLOSED:
@@ -279,16 +283,16 @@ class GUI(threading.Thread):
         print("scroll")
 
     def grab_area_isSet(self):
-        if self.window['mouse_x_start'].get() < self.window['mouse_x_end'].get() and self.window['mouse_y_start'].get() < self.window['mouse_y_end'].get():
+        if self.window['mouse_x_start'].get() <= self.window['mouse_x_end'].get() and self.window['mouse_y_start'].get() <= self.window['mouse_y_end'].get():
             return True
         else:
             msg="Grab area must be set n 1. Check the area set button \n 2. Click and drag mouse pointer to mark the area \n 3. Do so from upper left to lower right "
             self.list.append(msg)
             self.window['_list_'].update(self.list)
             print(msg)
-        return False
+            return False
 
 ##### testing gui
 
-#gui=GUI()
-#gui.start()
+gui=GUI()
+gui.start()
