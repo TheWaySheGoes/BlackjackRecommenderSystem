@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from PIL import ImageGrab
 
-class screen():
+class Screen():
 
     #vid_cap = cv2.VideoWriter_fourcc(*'MPEG')
     #out = cv2.VideoWriter('output.avi', vid_cap, 8.0, (200, 200)) # If you want to record screen.
