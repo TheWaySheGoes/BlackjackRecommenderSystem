@@ -4,14 +4,17 @@
 import threading
 #from show_screen import screen
 import test as t
-import gui
-#import genetic_algo
-#import cardDataset
-
+#import gui
+import recommender
 
 #thread for gui
 gui=gui.GUI()
 gui.start()
+
+
+
+
+
 
 
 

@@ -113,7 +113,7 @@ img_max_val=50
 
 while img_to < img_max_val:
     #model=torch.load(model_path)
-    #model.train()
+    model.train()
     imgs=[] #list of image tensors inputs
     boxs=[]
     lbls=[]
@@ -156,12 +156,12 @@ while img_to < img_max_val:
 
 
     #model=torch.load('models\\model1.m')
-#    if img_to%10==0:
-model.eval()
+    if img_to%10==0:
+        model.eval()
 
-predictions = model([imgs[0]])
-print("actual label:",lbls[0])
-print(predictions)
+        predictions = model([imgs[0]])
+        print("actual label:",lbls[0])
+        print(predictions)
 
 #for i in range(img_from,img_to):
 #    predictions = model([imgs[i]])

@@ -7,6 +7,8 @@ import PySimpleGUI as sg
 import threading
 from PIL import ImageGrab, Image
 'test'
+import recommender
+
 
 class GUI(threading.Thread):
    
@@ -165,6 +167,9 @@ class GUI(threading.Thread):
             event, values = self.window.read()
 
             if event=='in':
+                recommendation = recommender.recommender(a=1,p=21,d=2) 
+                if recommendation.thorpe()==0:
+                    self.stand_hit()
                 in_text=values['in']
 
             if event=='out':
