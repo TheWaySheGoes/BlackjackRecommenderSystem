@@ -81,7 +81,7 @@ for i in range(len(images)):
 #print(targets)
 
 #########inputs############
-csv_path='new_dataset/card1/new_train_label.csv'
+csv_path='new_dataset/card1/card1_new_train_label.csv'
 img_path='new_dataset/card1/train/'
 cards_csv = pd.read_csv(csv_path)
 print('dataset:',cards_csv)
@@ -112,7 +112,7 @@ img_steps=1
 img_max_val=50
 
 while img_to < img_max_val:
-    #model=torch.load(model_path)
+    model=torch.load(model_path)
     model.train()
     imgs=[] #list of image tensors inputs
     boxs=[]
