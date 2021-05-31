@@ -70,6 +70,8 @@ class CardDataset(Dataset):
         self.root_dir = root_dir
         self.transform = transform
 
+
+
     def __len__(self):
         return len(self.cards)
 

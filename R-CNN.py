@@ -62,9 +62,9 @@ model_path='models\\model1.m'
 #print("test: works")
 
 #model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False,num_classes=11)
-model=torch.load('models\\model1.m')
-#model= torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(pretrained=False, progress=True, num_classes=12, pretrained_backbone=False, trainable_backbone_layers=6)
-#torch.save(model,model_path)
+#model=torch.load('models\\model1.m')
+model= torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(pretrained=False, progress=True, num_classes=12, pretrained_backbone=False, trainable_backbone_layers=6)
+torch.save(model,model_path)
 model = model.to(device)
 # For training
 images, boxes = torch.rand(4, 3, 600, 1200), torch.tensor(aaaa)#torch.rand(4, 11, 4)
@@ -131,7 +131,7 @@ while img_to < img_max_val:
     #imgs=imgs.to(device)
     #########targets############
     for i in range(img_from,img_to):
-        boxs.append(torch.tensor([[xmin[i],ymin[i],xmax[i],ymax[i]]]).to(device))
+        boxs.append(torch.tensor([[int(xmin[i]),int(ymin[i]),int(xmax[i]),int(ymax[i])]]).to(device))
         #print(boxs[i])
     for i in range(img_from,img_to):
         lbls.append(torch.tensor([int(labels[i])]).to(device))
