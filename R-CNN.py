@@ -54,7 +54,7 @@ aaaa=   [[[0.0116, 0.03857, 0.9454, 0.3402],
          [0.01685, 0.02096, 0.9077, 0.0664], 
          [0.07279, 0.01533, 0.4141, 0.8476]]]
 
-
+model_path='models\\model1.m'
 
 
 
@@ -63,8 +63,8 @@ aaaa=   [[[0.0116, 0.03857, 0.9454, 0.3402],
 
 #model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False,num_classes=11)
 #model=torch.load('models\\model1.m')
-model= torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(pretrained=False, progress=True, num_classes=11, pretrained_backbone=False, trainable_backbone_layers=True)
-torch.save(model,'models\\model1.m')
+model= torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(pretrained=False, progress=True, num_classes=11, pretrained_backbone=False, trainable_backbone_layers=6)
+torch.save(model,model_path)
 model = model.to(device)
 # For training
 images, boxes = torch.rand(4, 3, 600, 1200), torch.tensor(aaaa)#torch.rand(4, 11, 4)
@@ -107,12 +107,12 @@ print("label max val:", max(labels))
 
 ################################ set this for batches
 img_from=0
-img_to=5
-img_steps=5
-img_max_val=100
+img_to=1
+img_steps=1
+img_max_val=10
 
 while img_to < img_max_val:
-    model=torch.load('models\\model1.m')
+    model=torch.load(model_path)
     imgs=[] #list of image tensors inputs
     boxs=[]
     lbls=[]
@@ -149,7 +149,7 @@ while img_to < img_max_val:
     #print(trgts)
     #trgts=trgts.to(device)
     output = model(imgs, trgts)
-    torch.save(model,'models\\model1.m')
+    torch.save(model,model_path)
     img_from=img_to
     img_to=img_to+img_steps
 
