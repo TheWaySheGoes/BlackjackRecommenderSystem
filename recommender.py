@@ -32,16 +32,20 @@ class recommender():
         self.d = d
     
     #0=stand, 1=hit, 2 double
+    #0=stand, 1=hit, 2 double
     def thorpe(self):    
-        if self.a == 1 and self.p <= 19:
+        if self.a == 1 and self.p <= 19 and self.p >= 13:
             return rec_ace[self.p-13][self.d-2] #lowest value of player's hand = ace + 2 = 13
         elif self.a == 1 and self.p > 19:
             return 0  
+        elif self.a == 1 and self.p < 13 and self.p >=9:
+            return rec[self.p-9][self.d-2] 
+
         elif self.a != 1 and self.p <= 16 and self.p >= 9:
             return rec[self.p-9][self.d-2] #lowest value of player's hand = 9
-        elif self.a != 1 and self.p < 9:
-            return 1
-        else:
+        elif self.a != 1 and self.p > 16:
             return 0
+        else:
+            return 1
 
 
