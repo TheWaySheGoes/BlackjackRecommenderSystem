@@ -61,7 +61,9 @@ aaaa=   [[[0.0116, 0.03857, 0.9454, 0.3402],
 
 #print("test: works")
 
-model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False,num_classes=11)
+#model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False,num_classes=11)
+#model=torch.load('models\\model1.m')
+model= torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(pretrained=False, progress=True, num_classes=11, pretrained_backbone=False, trainable_backbone_layers=True)
 model = model.to(device)
 # For training
 images, boxes = torch.rand(4, 3, 600, 1200), torch.tensor(aaaa)#torch.rand(4, 11, 4)
@@ -84,16 +86,16 @@ cards_csv = pd.read_csv(csv_path)
 print('dataset:',cards_csv)
 
 img_from=0
-img_to=1
+img_to=20
 img_steps=1
-img_max_val=20
+img_max_val=21
 
 #print(cards_csv.head())
 file_names=cards_csv['filename']
 #img_limit=len(file_names)
 #print(file_names)
 
-data_transform=transforms.Compose([transforms.Normalize(mean=[0.485],std=[0.229])])
+data_transform=transforms.Compose([transforms.Normalize(mean=[0.485,0.495,0.485],std=[0.229,0.244,0.259])])
 labels=cards_csv['labels']
 klass=cards_csv['class']
 xmin=cards_csv['xmin']
@@ -108,6 +110,7 @@ print("label max val:", max(labels))
 
 
 while img_to < img_max_val:
+    #model=torch.load('models\\model1.m')
     imgs=[] #list of image tensors inputs
     boxs=[]
     lbls=[]
@@ -144,19 +147,18 @@ while img_to < img_max_val:
     #print(trgts)
     #trgts=trgts.to(device)
     output = model(imgs, trgts)
-    torch.save(model,'models\\model1.m')
+    #torch.save(model,'models\\model1.m')
     img_from=img_to
     img_to=img_to+img_steps
 
 
+    #model=torch.load('models\\model1.m')
+    if img_to%10==0:
+        model.eval()
 
-
-    model=torch.load('models\\model1.m')
-    model.eval()
-
-    predictions = model([imgs[0]])
-    print("actual label:",lbls[0])
-    print(predictions)
+        predictions = model([imgs[0]])
+        print("actual label:",lbls[0])
+        print(predictions)
 
 #for i in range(img_from,img_to):
 #    predictions = model([imgs[i]])
