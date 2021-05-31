@@ -62,13 +62,13 @@ model_path='models\\model1.m'
 #print("test: works")
 
 #model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False,num_classes=11)
-#model=torch.load('models\\model1.m')
-model= torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(pretrained=False, progress=True, num_classes=11, pretrained_backbone=False, trainable_backbone_layers=6)
-torch.save(model,model_path)
+model=torch.load('models\\model1.m')
+#model= torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(pretrained=False, progress=True, num_classes=12, pretrained_backbone=False, trainable_backbone_layers=6)
+#torch.save(model,model_path)
 model = model.to(device)
 # For training
 images, boxes = torch.rand(4, 3, 600, 1200), torch.tensor(aaaa)#torch.rand(4, 11, 4)
-
+print(model)
 
 labels = torch.randint(1, 91, (4, 11))
 images = list(image for image in images)
@@ -81,8 +81,8 @@ for i in range(len(images)):
 #print(targets)
 
 #########inputs############
-csv_path='new_dataset/card2/new_train_label.csv'
-img_path='new_dataset/card2/train/'
+csv_path='new_dataset/card1/new_train_label.csv'
+img_path='new_dataset/card1/train/'
 cards_csv = pd.read_csv(csv_path)
 print('dataset:',cards_csv)
 
@@ -93,7 +93,7 @@ file_names=cards_csv['filename']
 #img_limit=len(file_names)
 #print(file_names)
 
-data_transform=transforms.Compose([transforms.Normalize(mean=[0.485,0.495,0.485],std=[0.229,0.244,0.259])])
+data_transform=transforms.Compose([transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])])
 labels=cards_csv['labels']
 klass=cards_csv['class']
 xmin=cards_csv['xmin']
@@ -109,10 +109,11 @@ print("label max val:", max(labels))
 img_from=0
 img_to=1
 img_steps=1
-img_max_val=10
+img_max_val=50
 
 while img_to < img_max_val:
-    model=torch.load(model_path)
+    #model=torch.load(model_path)
+    #model.train()
     imgs=[] #list of image tensors inputs
     boxs=[]
     lbls=[]
@@ -120,7 +121,7 @@ while img_to < img_max_val:
     trgts=[] # list of target dictionaries with tensors
 
     for i in range(img_from,img_to):
-        #print(file_names[i])
+        print(file_names[i])
         img=(read_image(img_path+file_names[i])).float()
         #print(img.shape)
         img=data_transform(img)
@@ -155,12 +156,12 @@ while img_to < img_max_val:
 
 
     #model=torch.load('models\\model1.m')
-    if img_to%10==0:
-        model.eval()
+#    if img_to%10==0:
+model.eval()
 
-        predictions = model([imgs[0]])
-        print("actual label:",lbls[0])
-        print(predictions)
+predictions = model([imgs[0]])
+print("actual label:",lbls[0])
+print(predictions)
 
 #for i in range(img_from,img_to):
 #    predictions = model([imgs[i]])
