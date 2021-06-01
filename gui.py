@@ -1,12 +1,28 @@
+import torchvision
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torch.utils.data import Dataset, DataLoader
+import torchvision.models as models
+from torchvision.io import read_image
+from torchvision import datasets, models, transforms
+import matplotlib
+import matplotlib.pyplot as plt
+import time
 import os
+import copy
+import csv
+import pandas as pd
+import numpy as np
+from skimage import io, transform
 from pynput.mouse import Listener as MouseListener
 from pynput.mouse import Button, Controller
 from pynput.keyboard import Listener as KeyboardListener
 #from pynput.keyboard import Key, Controller
 import PySimpleGUI as sg
 import threading
-from PIL import ImageGrab, Image
-'test'
+from PIL import ImageGrab, Image, ImageDraw
 import recommender
 
 
@@ -14,6 +30,8 @@ class GUI(threading.Thread):
    
     def __init__(self):
         threading.Thread.__init__(self)
+        self.model=torch.load('model\\test_model100.m',map_location=torch.device('cpu'))
+        self.model.eval()
         self.list=[]
         self.hit=[sg.Text('x'),sg.In(size=(5,1),enable_events=True,key='hit_x'),sg.Text('y'),sg.In(size=(5,1),enable_events=True,key='hit_y'),sg.Radio(text='hit',group_id='check',enable_events=False,key='hit_check')]
         self.stand=[sg.Text('x'),sg.In(size=(5,1),enable_events=True,key='stand_x'),sg.Text('y'),sg.In(size=(5,1),enable_events=True,key='stand_y'),sg.Radio(text='stand',group_id='check',enable_events=False,key='stand_check')]
@@ -26,6 +44,7 @@ class GUI(threading.Thread):
         self.start_end_Y=[sg.Text('start x'),sg.In(size=(5,1),enable_events=True,key='mouse_x_start'),sg.Text('end x'),sg.In(size=(5,1),enable_events=True,key='mouse_x_end')]
         self.start_end_X=[sg.Text('start y'),sg.In(size=(5,1),enable_events=True,key='mouse_y_start'),sg.Text('end y'),sg.In(size=(5,1),enable_events=True,key='mouse_y_end')]
         self.separator=[sg.HorizontalSeparator()]
+        self.image_window = [sg.Image(filename="data\MatejkoKonst3Maj1791.png",background_color='white',enable_events=True,size=(300,300),key='_image_')]
 
         self.column_1=[
                         self.start_end_XY_Radio,
@@ -38,25 +57,25 @@ class GUI(threading.Thread):
                         self.double,
                         self.deal,
                         self.extra1,
-                        self.extra2
+                        self.extra2,
+                        [sg.Button('grab',key='_grab_'),sg.Button('calc',key='_calc_'),sg.Button('remove',key='_remove_') ],
+                        [sg.Listbox(values=self.list,enable_events=True,size=(30,5), key='_list_',auto_size_text=True)]
+                    
         ]
 
-        self.column_2 = [                    
-                    [sg.Text('in text'), sg.In(size=(25, 1),enable_events=True,key='in')],
-                    [sg.Text('out text '), sg.In(size=(25, 1),enable_events=True,key='out')],
-                    [sg.Text('extra '), sg.In(size=(25, 1),enable_events=True,key='extra')],
-                    [sg.Button('grab',key='_grab_'),sg.Button('add',key='_add_'),sg.Button('remove',key='_remove_') ],
-                    [sg.Listbox(values=self.list,enable_events=True,size=(30,20), key='_list_',auto_size_text=True)]
-                    ]
+#        self.column_3 = [                    
+#                    [sg.Text('in text'), sg.In(size=(25, 1),enable_events=True,key='in')],
+#                    [sg.Text('out text '), sg.In(size=(25, 1),enable_events=True,key='out')],
+#                    [sg.Text('extra '), sg.In(size=(25, 1),enable_events=True,key='extra')],
+#                    ]
 
-        self.image_window = [sg.Image(filename="data\MatejkoKonst3Maj1791.png",background_color='white',enable_events=True,size=(300,300),key='_image_')]
-
-        self.column_3 = [
+        
+        self.column_2 = [
                         self.image_window
                     ]
 
         self.layout = [
-                [sg.Column(self.column_1),sg.Column(self.column_2,key='column_2'),sg.Column(self.column_3)]                
+                [sg.Column(self.column_1),sg.Column(self.column_2,key='column_2')]                
                 ]
 
         self.window = sg.Window('BlackJack',self.layout,resizable=True)
@@ -80,7 +99,7 @@ class GUI(threading.Thread):
         self.mouse.position=(int(self.window['hit_x'].get()),int(self.window['hit_y'].get()))
         print(self.mouse.position)
         
-    def stand_hit(self):
+    def click_stand(self):
         print((self.window['stand_x'].get()))
         print((self.window['stand_y'].get()))
         print(int(self.window['stand_x'].get()))
@@ -167,10 +186,7 @@ class GUI(threading.Thread):
             event, values = self.window.read()
 
             if event=='in':
-                recommendation = recommender.recommender(a=1,p=21,d=2) 
-                if recommendation.thorpe()==0:
-                    self.stand_hit()
-                in_text=values['in']
+                print()
 
             if event=='out':
                 out_text=values['out']
@@ -185,10 +201,81 @@ class GUI(threading.Thread):
                 self.window['_image_'].update(filename='data\grab1.png')
                 #print("grab")
                
-            if event=='_add_':
-
-                self.list.append(in_text+';'+out_text+';'+extra)
+            if event=='_calc_':
+                #send to model                
+                img=Image.open('data\grab1.png').convert("RGB")
+                #img=(read_image('data\grab1.png')).float()
+                a = transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225] )])
+                img=a(img)
+                predictions = self.model([img])
+                pred_boxes=predictions[0]['boxes'].detach().numpy()
+                pred_labels=predictions[0]['labels'].detach().numpy()
+                pred_scores=predictions[0]['scores'].detach().numpy()
+                half_image=(int(self.window['mouse_y_end'].get())-int(self.window['mouse_y_start'].get()))/2
+                print('half image:',half_image)
+                dealer_pred_boxes=[]
+                dealer_pred_labels=[]
+                dealer_pred_scores=[]
+                player_pred_boxes=[]
+                player_pred_labels=[]
+                player_pred_scores=[]
+                out_img=Image.open('data\grab1.png')
+                draw=ImageDraw.Draw(out_img)
+                for i in range(0,len(pred_scores)):
+                    if pred_boxes[i][1]< half_image and pred_boxes[i][3]<half_image:
+                        #dealers
+                        dealer_pred_boxes.append(pred_boxes[i])
+                        draw.rectangle([(pred_boxes[i][0],pred_boxes[i][1]),(pred_boxes[i][2],pred_boxes[i][3])],outline='red',width=2)
+                        dealer_pred_labels.append(pred_labels[i])
+                        dealer_pred_scores.append(pred_scores[i])
+                    elif pred_boxes[i][1]> half_image and pred_boxes[i][3]>half_image:
+                        #players
+                        player_pred_boxes.append(pred_boxes[i])
+                        draw.rectangle([(pred_boxes[i][0],pred_boxes[i][1]),(pred_boxes[i][2],pred_boxes[i][3])],outline='black',width=2)
+                        player_pred_labels.append(pred_labels[i])
+                        player_pred_scores.append(pred_scores[i])
+                out_img.save('data\grab1.png')
+                self.window['_image_'].update(filename='data\grab1.png')
+                print('dealer:')
+                print(dealer_pred_boxes)
+                print(dealer_pred_labels)
+                print(dealer_pred_scores)
+                print('player:')
+                print(player_pred_boxes)
+                print(player_pred_labels)
+                print(player_pred_scores)
+                self.list=[]
                 self.window['_list_'].update(self.list)
+                self.list.append(('dealer sum:',  dealer_pred_labels[dealer_pred_scores.index(max(dealer_pred_scores))] if len(dealer_pred_scores)>0  else -1 ))
+                self.window['_list_'].update(self.list)
+                
+
+                dealer_sum=(dealer_pred_labels[dealer_pred_scores.index(max(dealer_pred_scores))] if len(dealer_pred_scores)>0  else -1) if (dealer_pred_labels[dealer_pred_scores.index(max(dealer_pred_scores))] if len(dealer_pred_scores)>0  else -1) <10 else 10
+            
+                n=2
+                player_sum=0
+                for i in range(0,n):
+                    player_sum=player_sum+(player_pred_labels[i] if player_pred_labels[i] <10 else 10)
+                    print(player_sum)
+
+                self.list.append(('player sum:',player_sum))
+                self.window['_list_'].update(self.list)
+
+                #send to recommender system
+                recommendation = recommender.recommender(a=1,p=player_sum,d=dealer_sum) 
+                #make a decision
+                if recommendation.thorpe()==0:
+                    print("stand")
+                    self.click_stand()
+                elif recommendation.thorpe()==1:
+                    print("hit")
+                    self.click_hit()
+                elif recommendation.thorpe()==2:
+                    print("double")
+                    self.click_double()
+
+                
+
 
             if event=='_remove_':
                 if len(values['_list_'])>0:
