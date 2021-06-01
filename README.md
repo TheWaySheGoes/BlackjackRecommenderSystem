@@ -17,7 +17,6 @@ This project is dividied into separate modules. every module is responsible for 
     <li>Ai for next move recommendation</li>
     <li>Mouse steering </li>
     <li>Computer Vision</li>
-    <li><
     <li>Genetic recommender system (optional)</li>
 </ol>
 
