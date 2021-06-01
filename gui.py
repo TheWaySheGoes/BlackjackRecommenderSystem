@@ -259,10 +259,10 @@ class GUI(threading.Thread):
                     #     player_pred_scores.append(pred_scores[i])
 
                 for i in range(0,len(dealer_pred_scores)):
-                    draw.rectangle([(dealer_pred_boxes[i][0],dealer_pred_boxes[i][1]),(dealer_pred_boxes[i][2],dealer_pred_boxes[i][3])],outline='red',width=2)
+                    draw.rectangle([(dealer_pred_boxes[i][0],dealer_pred_boxes[i][1]),(dealer_pred_boxes[i][2],dealer_pred_boxes[i][3])],outline='red',width=1)
 
                 for i in range(0,len(player_pred_scores)):
-                    draw.rectangle([(player_pred_boxes[i][0],half_image+player_pred_boxes[i][1]),(player_pred_boxes[i][2],half_image+player_pred_boxes[i][3])],outline='black',width=2)
+                    draw.rectangle([(player_pred_boxes[i][0],half_image+player_pred_boxes[i][1]),(player_pred_boxes[i][2],half_image+player_pred_boxes[i][3])],outline='black',width=1)
 
 
                 player_pred_labels=list(set(player_pred_labels))
