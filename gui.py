@@ -31,6 +31,9 @@ class GUI(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.model=torch.load('model\\test_model100.m',map_location=torch.device('cpu'))
+        self.img_path='data\grab1.png'
+        self.img_dealer_path='data\grab_dealer.png'
+        self.img_player_path='data\grab_player.png'
         self.model.eval()
         self.list=[]
         self.hit=[sg.Text('x'),sg.In(size=(5,1),enable_events=True,key='hit_x'),sg.Text('y'),sg.In(size=(5,1),enable_events=True,key='hit_y'),sg.Radio(text='hit',group_id='check',enable_events=False,key='hit_check')]
@@ -191,45 +194,82 @@ class GUI(threading.Thread):
             if event == "_grab_" and self.grab_area_isSet()==True:
                 img=ImageGrab.grab(bbox=(int(self.window['mouse_x_start'].get()),int(self.window['mouse_y_start'].get()),int(self.window['mouse_x_end'].get()),int(self.window['mouse_y_end'].get())),include_layered_windows=True,all_screens=True)
                 #img.show()
-                img.save('data\grab1.png')
-                self.window['_image_'].update(filename='data\grab1.png')
+                img.save(self.img_path)
+                self.window['_image_'].update(filename= self.img_path)
                 #print("grab")
-               
+                img_dealer=img=ImageGrab.grab(bbox=(int(self.window['mouse_x_start'].get()),int(self.window['mouse_y_start'].get()),int(self.window['mouse_x_end'].get()),int(self.window['mouse_y_start'].get())+(int(self.window['mouse_y_end'].get())-int(self.window['mouse_y_start'].get()))/2),include_layered_windows=True,all_screens=True)
+                img_dealer.save(self.img_dealer_path)
+                img_player=img=ImageGrab.grab(bbox=(int(self.window['mouse_x_start'].get()),int(self.window['mouse_y_start'].get())+(int(self.window['mouse_y_end'].get())-int(self.window['mouse_y_start'].get()))/2,int(self.window['mouse_x_end'].get()),int(self.window['mouse_y_end'].get())),include_layered_windows=True,all_screens=True)
+                img_player.save(self.img_player_path)
+                #img_dealer.show()
+                #img_player.show()
+
+
             if event=='_calc_':
                 #send to model                
-                img=Image.open('data\grab1.png').convert("RGB")
+                img=Image.open( self.img_path).convert("RGB")
+                img_dealer=Image.open( self.img_dealer_path).convert("RGB")
+                img_player=Image.open(self.img_player_path).convert("RGB")
+                
+
                 #img=(read_image('data\grab1.png')).float()
                 a = transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225] )])
                 img=a(img)
-                predictions = self.model([img])
-                pred_boxes=predictions[0]['boxes'].detach().numpy()
-                pred_labels=predictions[0]['labels'].detach().numpy()
-                pred_scores=predictions[0]['scores'].detach().numpy()
+
+                img_dealer=Image.open(self.img_dealer_path).convert("RGB")
+                img_dealer=a(img_dealer)
+                img_player=Image.open(self.img_player_path).convert("RGB")
+                img_player=a(img_player)   
+
+
+                #predictions = self.model([img])
+                predictions_dealer = self.model([img_dealer])
+                predictions_player = self.model([img_player])
+                
+
+                #pred_boxes=predictions[0]['boxes'].detach().numpy()
+                #pred_labels=predictions[0]['labels'].detach().numpy()
+                #pred_scores=predictions[0]['scores'].detach().numpy()
                 half_image=(int(self.window['mouse_y_end'].get())-int(self.window['mouse_y_start'].get()))/2
-                print('half image:',half_image)
-                dealer_pred_boxes=[]
-                dealer_pred_labels=[]
-                dealer_pred_scores=[]
-                player_pred_boxes=[]
-                player_pred_labels=[]
-                player_pred_scores=[]
-                out_img=Image.open('data\grab1.png')
+                #print('half image:',half_image)
+
+
+                dealer_pred_boxes=predictions_dealer[0]['boxes'].detach().numpy()
+                dealer_pred_labels=predictions_dealer[0]['labels'].detach().numpy()
+                dealer_pred_scores=list(predictions_dealer[0]['scores'].detach().numpy())
+                player_pred_boxes=predictions_player[0]['boxes'].detach().numpy()
+                player_pred_labels=predictions_player[0]['labels'].detach().numpy()
+                player_pred_scores=predictions_player[0]['scores'].detach().numpy()
+
+                out_img=Image.open( self.img_path)
                 draw=ImageDraw.Draw(out_img)
-                for i in range(0,len(pred_scores)):
-                    if pred_boxes[i][1]< half_image and pred_boxes[i][3]<half_image:
-                        #dealers
-                        dealer_pred_boxes.append(pred_boxes[i])
-                        draw.rectangle([(pred_boxes[i][0],pred_boxes[i][1]),(pred_boxes[i][2],pred_boxes[i][3])],outline='red',width=2)
-                        dealer_pred_labels.append(pred_labels[i])
-                        dealer_pred_scores.append(pred_scores[i])
-                    elif pred_boxes[i][1]> half_image and pred_boxes[i][3]>half_image:
-                        #players
-                        player_pred_boxes.append(pred_boxes[i])
-                        draw.rectangle([(pred_boxes[i][0],pred_boxes[i][1]),(pred_boxes[i][2],pred_boxes[i][3])],outline='black',width=2)
-                        player_pred_labels.append(pred_labels[i])
-                        player_pred_scores.append(pred_scores[i])
-                out_img.save('data\grab1.png')
-                self.window['_image_'].update(filename='data\grab1.png')
+
+                #for i in range(0,len(pred_scores)):
+                #    if pred_boxes[i][1]< half_image and pred_boxes[i][3]<half_image:
+                #        #dealers
+                #         dealer_pred_boxes.append(pred_boxes[i])
+                    #     draw.rectangle([(pred_boxes[i][0],pred_boxes[i][1]),(pred_boxes[i][2],pred_boxes[i][3])],outline='red',width=2)
+                    #     dealer_pred_labels.append(pred_labels[i])
+                    #     dealer_pred_scores.append(pred_scores[i])
+                    # elif pred_boxes[i][1]> half_image and pred_boxes[i][3]>half_image:
+                    #     #players
+                    #     player_pred_boxes.append(pred_boxes[i])
+                    #     draw.rectangle([(pred_boxes[i][0],pred_boxes[i][1]),(pred_boxes[i][2],pred_boxes[i][3])],outline='black',width=2)
+                    #     player_pred_labels.append(pred_labels[i])
+                    #     player_pred_scores.append(pred_scores[i])
+
+                for i in range(0,len(dealer_pred_scores)):
+                    draw.rectangle([(dealer_pred_boxes[i][0],dealer_pred_boxes[i][1]),(dealer_pred_boxes[i][2],dealer_pred_boxes[i][3])],outline='red',width=2)
+
+                for i in range(0,len(player_pred_scores)):
+                    draw.rectangle([(player_pred_boxes[i][0],half_image+player_pred_boxes[i][1]),(player_pred_boxes[i][2],half_image+player_pred_boxes[i][3])],outline='black',width=2)
+
+
+                player_pred_labels=list(set(player_pred_labels))
+                print(player_pred_labels)
+
+                out_img.save( self.img_path)
+                self.window['_image_'].update(filename= self.img_path)
                 print('dealer:')
                 print(dealer_pred_boxes)
                 print(dealer_pred_labels)
@@ -245,11 +285,12 @@ class GUI(threading.Thread):
 
                 dealer_sum=(dealer_pred_labels[dealer_pred_scores.index(max(dealer_pred_scores))] if len(dealer_pred_scores)>0  else -1) if (dealer_pred_labels[dealer_pred_scores.index(max(dealer_pred_scores))] if len(dealer_pred_scores)>0  else -1) <10 else 10
             
-                n=int(self.window['in'].get())
+                n=int(self.window['in'].get() if self.window['in'].get() !='' else 2 )
                 print('nbr of cards:',n)
                 player_sum=0
                 player_cards=[]
-                for i in range(0,n):
+                for i,j in zip(range(0,n), range(0,len(player_pred_labels))):
+                
                     player_sum=player_sum+(player_pred_labels[i] if player_pred_labels[i] <10 else 10)
                     player_cards.append(player_pred_labels[i])
                     print(player_sum)
@@ -261,7 +302,7 @@ class GUI(threading.Thread):
                 self.list.append(('player cards:',player_cards))
                 self.window['_list_'].update(self.list)
 
-                if player_sum <21:
+                if player_sum <21 and dealer_sum !=-1 and player_sum:
                     #send to recommender system
                     recommendation = recommender.recommender(a=0,p=player_sum,d=dealer_sum) 
                     #make a decision
