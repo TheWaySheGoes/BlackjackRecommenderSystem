@@ -51,20 +51,14 @@ class GUI(threading.Thread):
                         self.start_end_Y,
                         self.start_end_X,
                         self.separator,
-                        self.hit,
-                        self.stand,
-                        self.split,
-                        self.double,
-                        self.deal,
-                        self.extra1,
-                        self.extra2,
+                        [sg.Text('in text'), sg.In(size=(25, 1),enable_events=False,key='in')],
                         [sg.Button('grab',key='_grab_'),sg.Button('calc',key='_calc_'),sg.Button('remove',key='_remove_') ],
                         [sg.Listbox(values=self.list,enable_events=True,size=(30,5), key='_list_',auto_size_text=True)]
                     
         ]
 
 #        self.column_3 = [                    
-#                    [sg.Text('in text'), sg.In(size=(25, 1),enable_events=True,key='in')],
+#                    ,
 #                    [sg.Text('out text '), sg.In(size=(25, 1),enable_events=True,key='out')],
 #                    [sg.Text('extra '), sg.In(size=(25, 1),enable_events=True,key='extra')],
 #                    ]
@@ -246,33 +240,46 @@ class GUI(threading.Thread):
                 print(player_pred_scores)
                 self.list=[]
                 self.window['_list_'].update(self.list)
-                self.list.append(('dealer sum:',  dealer_pred_labels[dealer_pred_scores.index(max(dealer_pred_scores))] if len(dealer_pred_scores)>0  else -1 ))
-                self.window['_list_'].update(self.list)
+                
                 
 
                 dealer_sum=(dealer_pred_labels[dealer_pred_scores.index(max(dealer_pred_scores))] if len(dealer_pred_scores)>0  else -1) if (dealer_pred_labels[dealer_pred_scores.index(max(dealer_pred_scores))] if len(dealer_pred_scores)>0  else -1) <10 else 10
             
-                n=2
+                n=int(self.window['in'].get())
+                print('nbr of cards:',n)
                 player_sum=0
+                player_cards=[]
                 for i in range(0,n):
                     player_sum=player_sum+(player_pred_labels[i] if player_pred_labels[i] <10 else 10)
+                    player_cards.append(player_pred_labels[i])
                     print(player_sum)
 
+                self.list.append(('dealer sum:',  dealer_sum ))
+                self.list.append(('dealer card:',  (dealer_pred_labels[dealer_pred_scores.index(max(dealer_pred_scores))] if len(dealer_pred_scores)>0  else -1)))
+                self.window['_list_'].update(self.list)
                 self.list.append(('player sum:',player_sum))
+                self.list.append(('player cards:',player_cards))
                 self.window['_list_'].update(self.list)
 
-                #send to recommender system
-                recommendation = recommender.recommender(a=1,p=player_sum,d=dealer_sum) 
-                #make a decision
-                if recommendation.thorpe()==0:
-                    print("stand")
-                    self.click_stand()
-                elif recommendation.thorpe()==1:
-                    print("hit")
-                    self.click_hit()
-                elif recommendation.thorpe()==2:
-                    print("double")
-                    self.click_double()
+                if player_sum <21:
+                    #send to recommender system
+                    recommendation = recommender.recommender(a=0,p=player_sum,d=dealer_sum) 
+                    #make a decision
+                    if recommendation.thorpe()==0:
+                        self.list.append(('recommendation: STAND'))
+                        self.window['_list_'].update(self.list)
+                        #self.click_stand()
+                    elif recommendation.thorpe()==1:
+                        self.list.append(('recommendation: HIT'))
+                        self.window['_list_'].update(self.list)
+                        #self.click_hit()
+                    elif recommendation.thorpe()==2:
+                        self.list.append(('recommendation: DOUBLE'))
+                        self.window['_list_'].update(self.list)
+                        #self.click_double()
+                else:
+                    self.list.append(('!!! BUST !!!!'))
+                    self.window['_list_'].update(self.list)
 
                 
 
@@ -325,49 +332,7 @@ class GUI(threading.Thread):
                 self.window['mouse_y_end'].update(y)
                 self.window['grab_check'].update(value=False)
 
-            if self.window['hit_check'].get()==True:
-                self.window['hit_x'].update(x)
-                self.window['hit_y'].update(y)
-                print('hit check', self.window['hit_check'].get())
-                self.window['hit_check'].update(value=False)
-
-            if self.window['stand_check'].get()==True:
-                self.window['stand_x'].update(x)
-                self.window['stand_y'].update(y)
-                print('stand check', self.window['stand_check'].get())
-                self.window['stand_check'].update(value=False)
-
-            if self.window['split_check'].get()==True:
-                self.window['split_x'].update(x)
-                self.window['split_y'].update(y)
-                print('split check', self.window['split_check'].get())
-                self.window['split_check'].update(value=False)
-
-            if self.window['double_check'].get()==True:
-                self.window['double_x'].update(x)
-                self.window['double_y'].update(y)
-                print('double check', self.window['double_check'].get())
-                self.window['double_check'].update(value=False)
-
-            if self.window['deal_check'].get()==True:
-                self.window['deal_x'].update(x)
-                self.window['deal_y'].update(y)
-                print('deal check', self.window['deal_check'].get())
-                self.window['deal_check'].update(value=False)
-
-            if self.window['extra1_check'].get()==True:
-                self.window['extra1_x'].update(x)
-                self.window['extra1_y'].update(y)
-                print('extra1 check', self.window['extra1_check'].get())
-                self.window['extra1_check'].update(value=False)
-
-            if self.window['extra2_check'].get()==True:
-                self.window['extra2_x'].update(x)
-                self.window['extra2_y'].update(y)
-                print('extra2 check', self.window['extra2_check'].get())
-                self.window['extra2_check'].update(value=False)
-                
-
+            
 
                  
 
@@ -376,7 +341,7 @@ class GUI(threading.Thread):
 
     def grab_area_isSet(self):
         ret=False
-        if self.window['mouse_x_start'].get() < self.window['mouse_x_end'].get() and self.window['mouse_y_start'].get() < self.window['mouse_y_end'].get():
+        if int(self.window['mouse_x_start'].get()) < int(self.window['mouse_x_end'].get()) and int(self.window['mouse_y_start'].get()) < int(self.window['mouse_y_end'].get()):
             ret=True
         else:
             msg="Grab area must be set n 1. Check the area set button \n 2. Click and drag mouse pointer to mark the area \n 3. Do so from upper left to lower right "
