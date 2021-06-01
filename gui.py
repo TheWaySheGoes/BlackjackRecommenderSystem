@@ -56,7 +56,7 @@ class GUI(threading.Thread):
                         self.separator,
                         [sg.Text('in text'), sg.In(size=(25, 1),enable_events=False,key='in')],
                         [sg.Button('grab',key='_grab_'),sg.Button('calc',key='_calc_'),sg.Button('remove',key='_remove_') ],
-                        [sg.Listbox(values=self.list,enable_events=True,size=(30,5), key='_list_',auto_size_text=True)]
+                        [sg.Listbox(values=self.list,enable_events=True,size=(30,10), key='_list_',auto_size_text=True)]
                     
         ]
 
