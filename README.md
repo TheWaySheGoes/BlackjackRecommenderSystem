@@ -17,7 +17,6 @@ This project is dividied into separate modules. every module is responsible for 
     <li>Ai for next move recommendation</li>
     <li>Mouse steering </li>
     <li>Computer Vision</li>
-    <li><
     <li>Genetic recommender system (optional)</li>
 </ol>
 
@@ -39,7 +38,7 @@ This project is dividied into separate modules. every module is responsible for 
 </p>
 
 <h2>PyTorch</h2>
-<p>...</p>
+<p>PyTorch is an open source machine learning library based on the Torch library,[3][4][5] used for applications such as computer vision and natural language processing,[6] primarily developed by Facebook's AI Research lab (FAIR).[7][8][9] It is free and open-source software released under the Modified BSD license. Although the Python interface is more polished and the primary focus of development, PyTorch also has a C++ interface.</p>
 
 <h2>PySimpleGUI</h2>
 
