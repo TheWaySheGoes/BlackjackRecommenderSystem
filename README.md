@@ -1,5 +1,5 @@
 # BlackjackRecommenderSystem
-Simple Ai for playing the Blackjack game
+Simple Ai for playing the Blackjack game. This is still work in prgress with a "working" GUI. Entry point is in main.py
 
 <h1>Initial stuff</h1>
 <p>All of the dependencies are in the requirements.txt 
