@@ -394,5 +394,5 @@ class GUI(threading.Thread):
 
 ##### testing gui
 
-gui=GUI()
-gui.start()
+#gui=GUI()
+#gui.start()
