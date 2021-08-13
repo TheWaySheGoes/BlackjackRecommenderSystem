@@ -36,8 +36,8 @@ class CardDataset(Dataset):
                 on a sample.
         """
         self.transform=transform
-        csv_path='BlackjackRecommenderSystem-main/new_dataset/card1/card1_new_train_label.csv'
-        self.img_path='BlackjackRecommenderSystem-main/new_dataset/card1/train/'
+        csv_path='new_dataset\\card1\\card1_new_train_label.csv'
+        self.img_path='new_dataset\\card1\\train\\'
         cards_csv = pd.read_csv(csv_path)
         self.file_names=cards_csv['filename']
         self.labels=cards_csv['labels']
@@ -96,7 +96,7 @@ model = model.to(device)
 import torch.optim as optim
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-def train(model, optimizer, loss_fn, train_loader, epochs=50):
+def train(model, optimizer, loss_fn, train_loader, epochs=1):
     
     for epoch in range(epochs):
         training_loss = 0.0
@@ -129,7 +129,7 @@ def train(model, optimizer, loss_fn, train_loader, epochs=50):
 
 train(model, optimizer, torch.nn.NLLLoss(),train_data_loader)
 print("Saving model...")
-torch.save(model,model_path)
+#torch.save(model,model_path)
 #model.eval()
 #predictions = model(inputs)
 #print("pred labels ", predictions)#[0]["labels"])
